@@ -1,7 +1,11 @@
-from django.urls import path
-
 from .views import TestView
+from django.contrib import admin
+from django.urls import path, include
 
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api/v1.0/user/', include('userAPI.urls'))
+]
 urlpatterns = [
     path('test', TestView.as_view()),
 ]
