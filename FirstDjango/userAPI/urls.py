@@ -1,13 +1,10 @@
-from .views import TestView
 from django.contrib import admin
 from django.urls import path, include
+from . import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/v1.0/user/', include('userAPI.urls'))
-]
-urlpatterns = [
-    path('test', TestView.as_view()),
+    path('api/register/', views.register_user, name='register_user'),
+    path('api/login/', views.login_user, name='login_user'),
 ]
 
 # localhost:8000/api/v1.0/user/test
