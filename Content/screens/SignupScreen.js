@@ -19,10 +19,10 @@ export default function SignupScreen() {
     };
 
     const isPasswordValid = (password) => {
-        // Expresión regular para validar la contraseña: al menos 9 dígitos y al menos un carácter especial
-        const passwordPattern = /^(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{9,}$/;
-        return passwordPattern.test(password);
+        // Validar que la contraseña tenga al menos 8 caracteres
+        return password.length >= 8;
     };  
+
     const handleSignup = () => {
         // Validación de contraseña y repetición de contraseña
         if (password !== repeatPassword) {
@@ -99,7 +99,7 @@ export default function SignupScreen() {
 
 
                     <Animated.View entering={FadeInDown.delay(800).duration(1000).springify()} className="bg-white p-5 rounded-2xl w-full ">
-                        <TextInput placeholder='Password with 9 digits and a special character' placeholderTextColor={'gray'} secureTextEntry value={password} onChangeText={(text) => setPassword(text)}/>
+                        <TextInput placeholder='Password (at least 8 digits)' placeholderTextColor={'gray'} secureTextEntry value={password} onChangeText={(text) => setPassword(text)}/>
                     </Animated.View>
                     <Animated.View entering={FadeInDown.delay(1000).duration(1000).springify()} className="bg-white p-5 rounded-2xl w-full mb-3">
                         <TextInput placeholder='Repeat Password' placeholderTextColor={'gray'} secureTextEntry value={repeatPassword} onChangeText={(text) => setRepeatPassword(text)}/>
