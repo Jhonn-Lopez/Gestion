@@ -1,5 +1,5 @@
 import {View, Text, Image, TextInput, TouchableOpacity, Alert} from 'react-native'
-import React from "react";
+import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import Animated, {FadeIn, FadeInDown, FadeInUp, FadeOut} from "react-native-reanimated";
 import {useNavigation} from "@react-navigation/native";
@@ -12,13 +12,33 @@ export default function SignupScreen() {
     const [password, setPassword] = useState('');
     const [repeatPassword, setRepeatPassword] = useState('');
 
+    const isEmailValid = (email) => {
+        // Expresión regular para validar una dirección de correo electrónico
+        const emailPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+        return emailPattern.test(email);
+    };
+
+    const isPasswordValid = (password) => {
+        // Expresión regular para validar la contraseña: al menos 9 dígitos y al menos un carácter especial
+        const passwordPattern = /^(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{9,}$/;
+        return passwordPattern.test(password);
+    };  
     const handleSignup = () => {
         // Validación de contraseña y repetición de contraseña
         if (password !== repeatPassword) {
-        Alert.alert('Contraseñas no coinciden', 'Las contraseñas deben ser iguales.');
-        return;
+            Alert.alert('Contraseñas no coinciden', 'Las contraseñas deben ser iguales.');
+            return;
         }
 
+        if (!isEmailValid(email)) {
+            Alert.alert('Correo electrónico no válido', 'Ingresa una dirección de correo electrónico válida.');
+            return;
+        }
+
+        if (!isPasswordValid(password)) {
+            Alert.alert('Contraseña no válida', 'La contraseña debe tener al menos 9 dígitos y un carácter especial.');
+            return;
+        }  
         // Construye el objeto de datos para enviar al servidor
         const userData = {
         name: name,
@@ -29,14 +49,15 @@ export default function SignupScreen() {
 
         // Realiza la solicitud POST al servidor
         axios
-        .post('http://127.0.0.1:8000/api/register/', userData)
+        .post('http://localhost:8000/api/v1.0/user/api/register/', userData)
         .then((response) => {
             // Procesa la respuesta del servidor, por ejemplo, mostrar un mensaje de éxito
-            Alert.alert('Registro exitoso', '¡Bienvenido! Ahora puedes iniciar sesión.');
+            Alert.alert('Registro exitoso', '¡Bienvenido! Ahora puedes iniciar sesión.')
+            navigation.navigate('Login');
         })
         .catch((error) => {
             // Maneja los errores, por ejemplo, muestra un mensaje de error
-            Alert.alert('Error de registro', 'Hubo un problema al registrarse. Inténtalo de nuevo.');
+            Alert.alert('Error de registro', 'Hubo un problema al registrarse. Verifique sus datos.');
         });
     };
 
@@ -73,12 +94,12 @@ export default function SignupScreen() {
                         <TextInput placeholder='Last Name' placeholderTextColor={'gray'} value={lastName} onChangeText={(text) => setLastName(text)}/>
                     </Animated.View>
                     <Animated.View entering={FadeInDown.delay(600).duration(1000).springify()} className="bg-white p-5 rounded-2xl w-full">
-                        <TextInput placeholder='Email' placeholderTextColor={'gray'} value={email} onChangeText={(text) = setEmail(text)}/>
+                        <TextInput placeholder='Email' placeholderTextColor={'gray'} value={email} onChangeText={(text) => setEmail(text)}/>
                     </Animated.View>
 
 
                     <Animated.View entering={FadeInDown.delay(800).duration(1000).springify()} className="bg-white p-5 rounded-2xl w-full ">
-                        <TextInput placeholder='Password' placeholderTextColor={'gray'} secureTextEntry value={password} onChangeText={(text) => setPassword(text)}/>
+                        <TextInput placeholder='Password with 9 digits and a special character' placeholderTextColor={'gray'} secureTextEntry value={password} onChangeText={(text) => setPassword(text)}/>
                     </Animated.View>
                     <Animated.View entering={FadeInDown.delay(1000).duration(1000).springify()} className="bg-white p-5 rounded-2xl w-full mb-3">
                         <TextInput placeholder='Repeat Password' placeholderTextColor={'gray'} secureTextEntry value={repeatPassword} onChangeText={(text) => setRepeatPassword(text)}/>

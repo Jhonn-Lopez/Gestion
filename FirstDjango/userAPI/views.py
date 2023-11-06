@@ -15,12 +15,28 @@ def register_user(request):
         serializer = UserSerializer(data=data)
 
         if serializer.is_valid():
+            email = data['email']
+            password = data['password']
+
+            # Verifica si el usuario ya existe
+            if User.objects.filter(email=email).exists():
+                return Response({'error': 'El usuario ya existe'}, status=status.HTTP_400_BAD_REQUEST)
+
             # Hash de la contraseña antes de guardarla en la base de datos
-            password = make_password(data['password'])
-            user = User(email=data['email'], name=data['name'], last_name=data['last_name'], password=password)
+            password_hashed = make_password(password)
+
+            user = User(email=email, name=data['name'], last_name=data['last_name'], password=password_hashed)
             user.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            # Autentica al usuario después del registro
+            user = authenticate(request, email=email, password=password)
+            if user:
+                login(request, user)
+
+            return Response({'message': 'Registro exitoso'}, status=status.HTTP_201_CREATED)
+
+        return Response({'error': 'Error de validación'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
