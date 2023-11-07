@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -19,6 +19,7 @@ export default function LoginScreen() {
 
       if (response.data.message === 'Login exitoso') {
         // Inicio de sesión exitoso, redirigir a la pantalla de inicio (HomeScreen)
+        navigation.navigate('Home');
       } else {
         // Mostrar un mensaje de error en caso de inicio de sesión fallido
         Alert.alert('Error', 'Credenciales incorrectas');

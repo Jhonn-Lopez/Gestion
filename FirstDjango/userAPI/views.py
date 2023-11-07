@@ -37,19 +37,22 @@ def register_user(request):
 
         return Response({'error': 'Error de validación'}, status=status.HTTP_400_BAD_REQUEST)
 
-
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login_user(request):
     if request.method == 'POST':
-        email = request.data.get('email')
-        password = request.data.get('password')
+        data = request.data
+        email = data.get('email')
+        password = data.get('password')
 
-        if email and password:
-            user = User.objects.filter(email=email).first()
+        print(f'Intento de inicio de sesión con email: {email} y contraseña: {password}')  # Agrega esta línea
 
-            if user is not None and user.check_password(password):
-                # Iniciar sesión
-                login(request, user)
-                return Response({'message': 'Inicio de sesión exitoso'}, status=status.HTTP_200_OK)
-        return Response({'message': 'Credenciales incorrectas'}, status=status.HTTP_401_UNAUTHORIZED)
+        user = authenticate(request, email=email, password=password)
+
+        if user is not None:
+            # Las credenciales son válidas, inicia sesión en la sesión actual
+            login(request, user)
+            return Response({'message': 'Login exitoso'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Credenciales incorrectas'}, status=status.HTTP_401_UNAUTHORIZED)
+
